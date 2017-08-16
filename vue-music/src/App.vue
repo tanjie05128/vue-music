@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <MHeader></MHeader>
+    <m-header></m-header>
     <tab></tab>
     <router-view></router-view>
   </div>
@@ -8,13 +8,13 @@
 
 <script type="text/ecmascript-6">
   import MHeader from 'components/m-header/m-header.vue'
-  import tab from 'components/tab/tab.vue'
+  import Tab from 'components/tab/tab.vue'
 
   export default {
     name: 'app',
     components: {
       MHeader,
-      tab
+      Tab
     }
   }
 </script>
