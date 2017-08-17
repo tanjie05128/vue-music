@@ -4,7 +4,7 @@
         <slot></slot>
       </div>
       <div class="dots">
-
+        <span class="dot" v-for="(item, index) in dots" :class="{active: currentPageIndex === index}"></span>
       </div>
     </div>
 </template>
@@ -15,6 +15,12 @@
 
   export default {
     name: 'slider',
+    data() {
+      return {
+        dots: [],
+        currentPageIndex: 0
+      }
+    },
     props: {
       loop: {
         type: Boolean,
@@ -33,17 +39,27 @@
       setTimeout(() => {
 //        做一些初始化操作
         this._setSliderWidth()
+        this._initDots()
         this._initSlider()
-//        this.$nextTick(() => {
-//          this.scroll = new BScroll(this.$refs.sliderContainer, {
-//            click: true
-//          })
-//        })
+
+        if (this.autoPlay) {
+          this._play()
+        }
       }, 20)
+
+//      当屏幕宽度改变时，重新计算silder的宽度
+      window.addEventListener('resize', () => {
+        if (!this.slider) {
+          return
+        }
+        this._setSliderWidth(true)
+        this.slider.refresh()
+      })
     },
     methods: {
-      _setSliderWidth() {
+      _setSliderWidth(isResize) {
         this.children = this.$refs.sliderGroup.children
+        console.log(this.children.length)
         let width = 0
         let sliderWidth = this.$refs.slider.clientWidth
         for (let i = 0; i < this.children.length; i++) {
@@ -54,28 +70,55 @@
           width += sliderWidth
         }
 
-        if (this.loop) {
+        if (this.loop && !isResize) {
           width += 2 * sliderWidth
         }
         this.$refs.sliderGroup.style.width = width + 'px'
       },
+      _initDots() {
+        this.dots = new Array(this.children.length)
+      },
       _initSlider() {
         this.slider = new BScroll(this.$refs.slider, {
-          scrollX: true,
-          scrollY: false,
-          momentum: false,
+          scrollX: true, // 可以横向滚动
+          scrollY: false, // 不可以纵向滚动
+          momentum: false, // 惯性
           snap: true,
           snapLoop: this.loop,
           snapThreshold: 0.3,
           snapSpeed: 400,
-          click: true
+          click: true // 在移动端这个better-scroll自己派发的click事件，会被fastclick事件给监听到
         })
+
+        this.slider.on('scrollEnd', () => {
+          let pageIndex = this.slider.getCurrentPage().pageX
+          if (this.loop) {
+            pageIndex -= 1
+          }
+          this.currentPageIndex = pageIndex
+
+          if (this.autoPlay) {
+            clearTimeout(this.timer)
+            this._play()
+          }
+        })
+      },
+      _play() {
+        let pageIndex = this.currentPageIndex + 1
+        if (this.loop) {
+          pageIndex += 1
+        }
+        this.timer = setTimeout(() => {
+          this.slider.goToPage(pageIndex, 0, 400)
+        }, this.interval)
       }
     }
   }
 </script>
 
 <style lang="stylus" type="text/stylus" rel="stylesheet/stylus">
+  @import "../../common/stylus/variable.styl"
+
   .slider
     min-height: 1px
     .slider-group
