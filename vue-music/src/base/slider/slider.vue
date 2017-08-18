@@ -59,7 +59,6 @@
     methods: {
       _setSliderWidth(isResize) {
         this.children = this.$refs.sliderGroup.children
-        console.log(this.children.length)
         let width = 0
         let sliderWidth = this.$refs.slider.clientWidth
         for (let i = 0; i < this.children.length; i++) {
@@ -112,6 +111,10 @@
           this.slider.goToPage(pageIndex, 0, 400)
         }, this.interval)
       }
+    },
+    // 有利于内存的释放
+    destroyed() {
+      clearTimeout(this.timer)
     }
   }
 </script>
