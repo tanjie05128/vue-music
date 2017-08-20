@@ -7,7 +7,7 @@
             <slider>
               <div v-for="item in recommends">
                 <a :href="item.linkUrl">
-                  <img :src="item.picUrl" @load="loadImage" alt="">
+                  <img :src="item.picUrl" class="needsclick" @load="loadImage" alt="">
                 </a>
               </div>
             </slider>
@@ -17,7 +17,7 @@
             <ul>
               <li v-for="item in discList" class="item">
                 <div class="icon">
-                  <img :src="item.imgurl" alt="" width=60 height=60>
+                  <img v-lazy="item.imgurl" alt="" width=60 height=60>
                 </div>
                 <div class="text">
                   <h2 class="name" v-html="item.creator.name"></h2>
@@ -26,6 +26,9 @@
               </li>
             </ul>
           </div>
+        </div>
+        <div class="loading-container" v-show="!discList.length">
+          <Loading></Loading>
         </div>
       </scroll>
     </div>
@@ -36,6 +39,7 @@
   import { ERR_OK } from 'api/config'
   import Slider from 'base/slider/slider'
   import Scroll from 'base/scroll/scroll'
+  import Loading from 'base/loading/loading'
 
   export default {
     data() {
@@ -45,10 +49,10 @@
       }
     },
     created() {
+      this._getRecommend()
       setTimeout(() => {
-        this._getRecommend()
-      }, 2000)
-      this._getDiscList()
+        this._getDiscList()
+      }, 1000)
     },
     methods: {
       _getRecommend() {
@@ -62,9 +66,7 @@
       _getDiscList() {
         getDiscList().then((res) => {
           if (res.code === ERR_OK) {
-            console.log(res.data)
             this.discList = res.data.list
-            console.log(this.discList)
           }
         })
       },
@@ -77,7 +79,8 @@
     },
     components: {
       Slider,
-      Scroll
+      Scroll,
+      Loading
     }
   }
 </script>
@@ -126,4 +129,9 @@
               color: $color-text
             .desc
               color: $color-text-d
+      .loading-container
+        position: absolute
+        width: 100%
+        top: 50%
+        transform: translateY(-50%)
 </style>
