@@ -3,7 +3,8 @@
           :data="data"
           ref="listview"
           :listenScroll="listenScroll"
-          @scroll=scroll :probeType="probeType">
+          @scroll=scroll
+          :probeType="probeType">
     <ul>
       <li v-for="group in data" class="list-group" ref="listGroup">
         <h2 class="list-group-title">{{group.title}}</h2>
@@ -33,7 +34,7 @@
 
   export default {
     created() {
-      this.touch = {}
+      this.touch = {} // 不希望vue给created里面添加getter和setter，不观测其数据
       this.listenScroll = true
       this.listHeight = []
       this.probeType = 3
@@ -54,6 +55,7 @@
       Scroll
     },
     computed: {
+      // 右侧快照列表
       shortcutList() {
         return this.data.map((group) => {
           return group.title.substr(0, 1)
@@ -63,23 +65,22 @@
     methods: {
       onShortcutTouchStart(e) {
         let anchorIndex = getData(e.target, 'index')
-        let firstTouch = e.touches[0]
+        let firstTouch = e.touches[0] // 表示当前跟踪的触摸操作的touch对象的数组
         this.touch.y1 = firstTouch.pageY
-        this.touch.anchorIndex = anchorIndex
+        this.touch.anchorIndex = anchorIndex // 这里取到的值是一个字符串，所以后续需要用parseInt转换成number类型
         this._scrollTo(anchorIndex)
       },
       onShortcutTouchMove(e) {
         let firstTouch = e.touches[0]
         this.touch.y2 = firstTouch.pageY
-        let delta = (this.touch.y2 - this.touch.y1) / ANCHOR_HEIGHT | 0
+        let delta = (this.touch.y2 - this.touch.y1) / ANCHOR_HEIGHT | 0 // 向下取整可以或0
         let anchorIndex = parseInt(this.touch.anchorIndex) + delta
         this._scrollTo(anchorIndex)
       },
       scroll(pos) {
         this.scrollY = pos.y
       },
-      _scrollTo(index) {
-        console.log(index)
+      _scrollTo(index) { // 抽象的方法，从点击和移动事件中抽出来
         if (!index && index !== 0) {
           return
         }

@@ -30,7 +30,7 @@
         getSingerList().then((res) => {
           if (res.code === ERR_OK) {
             this.singers = this._normalizeSinger(res.data.list)
-            console.log(this.singers)
+//            console.log(this.singers)
           }
         })
       },
@@ -42,6 +42,7 @@
           }
         }
         list.forEach((item, index) => {
+          // 请求回来的数据前10条默认为热门
           if (index < HOT_SINGER_LEN) {
             map.hot.items.push(new Singer({
               id: item.Fsinger_mid,
