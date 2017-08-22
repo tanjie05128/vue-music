@@ -23,26 +23,35 @@
         </li>
       </ul>
     </div>
+    <div class="list-fixed" v-show="fixedTitle" ref="fixed">
+      <h1 class="fixed-title">{{fixedTitle}}</h1>
+    </div>
+    <div v-show="!data.length" class="loading-container">
+      <loading></loading>
+    </div>
   </scroll>
 </template>
 
 <script type="text/ecmascript-6">
   import Scroll from 'base/scroll/scroll'
+  import Loading from 'base/loading/loading'
   import {getData} from 'common/js/dom'
 
   const ANCHOR_HEIGHT = 18
+  const TITLE_HEIGHT = 30
 
   export default {
     created() {
       this.touch = {} // 不希望vue给created里面添加getter和setter，不观测其数据
-      this.listenScroll = true
+      this.listenScroll = true // 给scroll组件传入监听滚动事件
       this.listHeight = []
       this.probeType = 3
     },
     data() {
       return {
-        scrollY: -1,
-        currentIndex: 0
+        scrollY: -1, // 观测better-scroll实时滚动的y值
+        currentIndex: 0,
+        diff: -1
       }
     },
     props: {
@@ -52,7 +61,8 @@
       }
     },
     components: {
-      Scroll
+      Scroll,
+      Loading
     },
     computed: {
       // 右侧快照列表
@@ -60,6 +70,12 @@
         return this.data.map((group) => {
           return group.title.substr(0, 1)
         })
+      },
+      fixedTitle() {
+        if (this.scrollY > 0) {
+          return ''
+        }
+        return (this.data[this.currentIndex] ? this.data[this.currentIndex].title : '')
       }
     },
     methods: {
@@ -81,7 +97,7 @@
         this.scrollY = pos.y
       },
       _scrollTo(index) { // 抽象的方法，从点击和移动事件中抽出来
-        if (!index && index !== 0) {
+        if (!index && index !== 0) { // 防止点击到shortcut部分的上下padding而出现错误
           return
         }
         if (index < 0) {
@@ -92,7 +108,7 @@
         this.scrollY = -this.listHeight[index]
         this.$refs.listview.scrollToElement(this.$refs.listGroup[index], 0) // 第二个参数是需不需要缓动动画的效果
       },
-      _calculateHeight() {
+      _calculateHeight() { // 计算左侧每个li标签的高度数组
         this.listHeight = []
         const list = this.$refs.listGroup
         let height = 0
@@ -123,11 +139,20 @@
           var height2 = listHeight[i + 1]
           if (-newY >= height1 && -newY < height2) {
             this.currentIndex = i
+            this.diff = height2 + newY
             return
           }
         }
         // 当滚动到底部，且-newY大于最后一个元素的上限
         this.currentIndex = listHeight.length - 2
+      },
+      diff(newVal) {
+        let fixedTop = (newVal > 0 && newVal < TITLE_HEIGHT) ? newVal - TITLE_HEIGHT : 0
+        if (this.fixedTop === fixedTop) {
+          return
+        }
+        this.fixedTop = fixedTop
+        this.$refs.fixed.style.transform = `translate3d(0, ${fixedTop}px, 0)`
       }
     }
   }
