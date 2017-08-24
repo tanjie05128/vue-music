@@ -48,7 +48,7 @@
       _normallizeSongs(list) {
         let ret = []
         list.forEach((item) => {
-          let {musicData} = item
+          let {musicData} = item // 解构赋值，便于直接拿到musicData而不用循环判断
           if (musicData.songid && musicData.albummid) {
             ret.push(createSong(musicData))
           }

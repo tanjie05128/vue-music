@@ -85,7 +85,7 @@
         })
         return hot.concat(ret)
       },
-      ...mapMutations({
+      ...mapMutations({ // 对mutation进行封装
         setSinger: 'SET_SINGER'
       })
     }
