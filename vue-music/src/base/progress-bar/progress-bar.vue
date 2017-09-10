@@ -27,7 +27,7 @@
     },
     watch: {
       percent(newPercent) {
-        if (newPercent >= 0 && this.touch.initiated) {
+        if (newPercent >= 0 && !this.touch.initiated) {
           const barWidth = this.$refs.progressBar.clientWidth - progressBtnWidth
           const offsetWidth = newPercent * barWidth
           this._offset(offsetWidth)
@@ -56,7 +56,11 @@
         this._triggerPercent()
       },
       progressClick(e) {
-        this._offset(e.offsetX)
+        const rect = this.$refs.progressBar.getBoundingClientRect()
+        const offsetWidth = e.pageX - rect.left
+        this._offset(offsetWidth)
+//        这里当我们点击 progressBtn 的时候，offsetX获取不对
+//        this._offset(e.offsetX)
         this._triggerPercent()
       },
       _triggerPercent() {
