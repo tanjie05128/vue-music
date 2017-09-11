@@ -37,7 +37,7 @@
         </div>
         <div class="bottom">
           <div class="dot-wrapper">
-            <span class="dot" ></span>
+            <span class="dot"></span>
             <span class="dot"></span>
           </div>
           <div class="progress-wrapper">
