@@ -230,7 +230,7 @@
         if (!this.songReady) {
           return
         }
-        if (this.playlist.length === 1) {
+        if (this.playlist.length === 1) { // 处理歌单只有一首歌的时候的边界情况
           this.loop()
         } else {
           let index = this.currentIndex + 1
@@ -248,7 +248,7 @@
         if (!this.songReady) {
           return
         }
-        if (this.playlist.length === 1) {
+        if (this.playlist.length === 1) { // 处理歌单只有一首歌的时候的边界情况
           this.loop()
         } else {
           let index = this.currentIndex - 1
