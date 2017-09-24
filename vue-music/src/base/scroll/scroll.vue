@@ -24,6 +24,10 @@
       listenScroll: {
         type: Boolean,
         default: false
+      },
+      pullup: {
+        type: Boolean,
+        default: false
       }
     },
     mounted() {
@@ -45,6 +49,14 @@
           let _this = this
           this.scroll.on('scroll', (pos) => {
             _this.$emit('scroll', pos) // 这里不能直接用this，否则会指向scroll事件，而我们需要指向scroll这个实例
+          })
+        }
+
+        if (this.pullup) {
+          this.scroll.on('scrollEnd', () => {
+            if (this.scroll.y <= this.scroll.maxScrollY + 50) {
+              this.$emit('scrollToEnd')
+            }
           })
         }
       },
