@@ -9,6 +9,9 @@ import fastclick from 'fastclick'
 
 import 'common/stylus/index.styl'
 
+/* eslint-disable no-unused-vars */
+// import vConsole from 'vconsole'
+
 // 移动端点击300毫秒优化
 fastclick.attach(document.body)
 
